@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content %}
+<section>
+    <div class="container mt-2 mb-2 ">
+        <div class="row d-flex justify-content-center back_color">
+            {% for pc in data %}
+            <div class="col-3 mt-2 mb-2">
+                <div class="card text-white bg-dark mb-3 shadow-sm">
+                    <div class="card-body">
+                    <h5 class="card-title">{{ pc.name }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">ip : {{ pc.ip }}</h6>
+                    <h6 class="card-subtitle mb-2 text-muted">mac_adress : {{ pc.mac_adress }}</h6>
+                    <div class="mt-3 mb-2">
+                        <a href="{% url 'pc' pc.id%}" class="btn btn-light">Посмотреть</a>
+                        <a href="{% url 'delete_pc' pc.id%}" class="btn btn-danger">Удалить</a>
+                    </div>
+                    
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+          </div>
+    </div>
+</section>
+
+
+<div>
+    <form action="{% url 'add_pc'%}" method="post">
+        {% csrf_token %}
+        <input type="text" name="name">
+        <input type="text" name="ip">
+        <input type="text" name="mac_adress">
+        <input type="text" name="description">
+        <input type="submit">
+    </form>
+</div>
+{% endblock %}
+    
