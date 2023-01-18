@@ -20,9 +20,9 @@
                     <h5 class="card-title">{{ pc.name }}</h5>
                     <h6 class="card-subtitle mb-2 text-muted">ip : {{ pc.ip }}</h6>
                     <h6 class="card-subtitle mb-2 text-muted">mac_adress : {{ pc.mac_adress }}</h6>
-                    <div class="mt-3 mb-2">
-                        <a href="{% url 'pc' pc.id%}" class="btn btn-light">Посмотреть</a>
-                        <a href="{% url 'delete_pc' pc.id%}" class="btn btn-danger">Удалить</a>
+                    <div class="mt-3 mb-2 ">
+                        <a href="{% url 'pc' pc.id%}" class="btn btn-light text-weight-buttons">Посмотреть</a>
+                        <a href="{% url 'delete_pc' pc.id%}" class="btn btn-danger text-weight-buttons">Удалить</a>
                     </div>
                     
                     </div>
