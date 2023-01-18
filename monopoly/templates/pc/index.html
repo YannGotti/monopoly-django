@@ -14,7 +14,7 @@
 
         <div class="row d-flex justify-content-center back_color">
             {% for pc in data %}
-            <div class="col-3 mt-2 mb-2">
+            <div class="col-lg-3 col-5 mt-2 mb-2">
                 <div class="card text-white bg-dark mb-3 shadow-sm">
                     <div class="card-body">
                     <h5 class="card-title">{{ pc.name }}</h5>
@@ -34,7 +34,7 @@
 </section>
 
 
-<!--div>
+<div>
     <form action="{% url 'add_pc'%}" method="post">
         {% csrf_token %}
         <input type="text" name="name">
@@ -43,6 +43,13 @@
         <input type="text" name="description">
         <input type="submit">
     </form>
-</div-->
+</div>
+
+<!--script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<script>
+    
+</script-->
+
 {% endblock %}
     

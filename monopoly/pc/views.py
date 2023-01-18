@@ -13,9 +13,17 @@ class AddPc(View):
     '''добавить комп'''
     def post(self, request):
         form = PCForms(request.POST)
-        if form.is_valid():
-            form = form.save(commit=False)
-            form.save()
+        
+        if not form.is_valid():
+            return redirect('/')
+
+        form = form.save(commit=False)
+        pc = UserPc.objects.filter(name = form.name)
+
+        if len(pc) != 0:
+            form.name = form.name + " (copy)"
+
+        form.save()
         return redirect('/')
 
 class SelectPc(View):
