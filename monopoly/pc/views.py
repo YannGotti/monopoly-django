@@ -35,3 +35,12 @@ class DeletePc(View):
         pc.delete()
         UserPc.save
         return redirect('/')
+
+class ShowDataDisk(View):
+    def get(self, request, pk):
+        disk = Disk.objects.get(id=pk)
+        context = {
+            'disk' : disk
+        }
+        return redirect('/')
+        #return render(request, 'pc/pc.html', context = context)
