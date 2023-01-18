@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views.generic.base import View
-from .models import UserPc
+from .models import UserPc, Disk
 from .form import PCForms
 
 class ShowAllPc(View):
@@ -21,9 +21,10 @@ class AddPc(View):
 class SelectPc(View):
     def get(self, request, pk):
         pc = UserPc.objects.get(id=pk)
+        disks = Disk.objects.filter(user_pc = pk)
         context = {
-            'title': 'Пиздес',
-            'pc': pc
+            'pc': pc,
+            'disks' : disks
         }
         return render(request, 'pc/pc.html', context = context)
 
