@@ -26,12 +26,13 @@ function request_add_pc() {
         contentType: false,
         type: 'POST',
         success: function(data){
-            select_last_pc(formData.get("name"))
+            if (formData.get("name") == "") { return }
+            else select_last_pc()
         }
     });
 }
 
-function select_last_pc(name){
+function select_last_pc(){
     $.ajax({
         url: "pc/ajax/select_last_pc/",
         processData: false,
@@ -47,14 +48,11 @@ function select_last_pc(name){
             pc.splice(0, 1)
             pc.splice(4, 6)
 
-            if (name == "") {add_pc(null)}
-            else add_pc(pc)
+            add_pc(pc)
         }
     });
 
     function add_pc(pc){
-        if (pc == null){ return }
-
         let row = document.getElementById("row-pc");
 
         row.innerHTML += `<div class="col-lg-3 col-5 mt-2 mb-2  animate__animated animate__fadeIn" id="pc-`+ pc[0] + `">
