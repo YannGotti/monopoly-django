@@ -12,7 +12,7 @@
         </div>
         <div class="row d-flex justify-content-center back_color" id="row-pc">
             {% for pc in data %}
-            <div class="col-lg-3 col-5 mt-2 mb-2" id="pc-{{ pc.id }}">
+            <div class="col-lg-3 col-5 mt-2 mb-2 animate__animated animate__fadeIn" id="pc-{{ pc.id }}">
                 <div class="card text-white bg-dark mb-3 shadow-sm">
                     <div class="card-body">
                     <h5 class="card-title">{{ pc.name }}</h5>
@@ -40,90 +40,12 @@
         <input type="text" name="mac_adress">
         <input type="text" name="description">
     </form>
-    <h5 class="text-white-50" onclick="add_pc()">ОТПРАВИТЬ</h5>
+    <h5 class="text-white-50" onclick="request_add_pc()">ОТПРАВИТЬ</h5>
 
 </div>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-
-<script>
-
-    function request_del_pc(pk) {
-        $.ajax({
-            url: "pc/delete/"+ pk +"/",
-            data: {
-                'pk': pk
-            },
-            processData: false,
-            contentType: false,
-            type: 'GET',
-            success: function(data){
-                var pc = document.querySelector("#pc-" + pk);
-                pc.remove()
-            }
-        });
-    }
-
-    function add_pc() {
-
-        var formElement = document.querySelector("#formPc");
-        var formData = new FormData(formElement);
-
-        $.ajax({
-            url: "{% url 'add_pc'%}",
-            data: formData,
-            processData: false,
-            contentType: false,
-            type: 'POST',
-            success: function(data){
-                select_last_pc(formData.get("name"))
-            }
-        });
-    }
-
-    function select_last_pc(name){
-        $.ajax({
-            url: "{% url 'select_last_pc'%}",
-            processData: false,
-            contentType: false,
-            type: 'GET',
-            success: function(data){
-                pc = []
-
-                JSON.parse(data, function(tables, data) {
-                    pc.push(data)
-                });
-                
-                pc.splice(0, 1)
-                pc.splice(4, 6)
-
-                if (name == "") {add_pc(null)}
-                else add_pc(pc)
-            }
-        });
-
-        function add_pc(pc){
-            if (pc == null){ return }
-
-            let row = document.getElementById("row-pc");
-
-            row.innerHTML += `<div class="col-lg-3 col-5 mt-2 mb-2" id="pc-`+ pc[0] + `">
-                <div class="card text-white bg-dark mb-3 shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">` + pc[1] + `</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">ip : ` + pc[2] + `</h6>
-                        <h6 class="card-subtitle mb-2 text-muted">mac_adress : ` + pc[3] + `</h6>
-                        <div class="mt-3 mb-2 ">
-                            <a href="pc/`+ pc[0] + `/" class="btn btn-light text-weight-buttons">Посмотреть</a>
-                            <a class="btn btn-danger text-weight-buttons" onclick="request_del_pc(`+ pc[0] + `)">Удалить</a>
-                        </div>
-                    </div>
-                </div>
-            </div>`
-        }
-    }
-
-</script>
+<script src="{% static 'js/ajax.js' %}"></script>
 
 {% endblock %}
     
