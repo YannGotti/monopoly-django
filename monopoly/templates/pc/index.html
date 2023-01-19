@@ -30,30 +30,30 @@
     </div>
 </section>
 
-
-<section>
+{% if user.is_superuser %}
+<section class="animate__animated animate__fadeIn">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-5">
                 <form id="formPc">
                     {% csrf_token %}
                     <div class="mb-3">
-                    <label class="form-label text-light">Имя компа</label>
+                    <label class="form-label text-light text-weight-custom">Имя компа</label>
                     <input type="text" class="form-control text-dark text-weight-form" name="name">
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label text-light">IP компа</label>
+                        <label class="form-label text-light text-weight-custom">IP компа</label>
                         <input type="text" class="form-control text-dark text-weight-form" name="ip">
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label text-light">MAC-ADRESS компа</label>
+                        <label class="form-label text-light text-weight-custom">MAC-ADRESS компа</label>
                         <input type="text" class="form-control text-dark text-weight-form" name="mac_adress">
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label text-light">Описание</label>
+                        <label class="form-label text-light text-weight-custom">Описание</label>
                         <textarea class="form-control text-dark text-weight-form" type="text" rows="3" name="description"></textarea>
                       </div>
                     
@@ -66,6 +66,7 @@
         </div>
     </div>
 </section>
+{% endif %}
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="{% static 'js/ajax.js' %}"></script>
