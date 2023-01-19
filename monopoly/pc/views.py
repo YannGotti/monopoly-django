@@ -26,7 +26,7 @@ class AddPc(View):
             form.name = form.name + " (copy)"
 
         form.save()
-        return redirect('/')
+        return HttpResponse('Ok')
 
 class SelectLastPc(View):
     '''последний комп json'''
@@ -56,7 +56,7 @@ class DeletePc(View):
     def get(self, request, pk):
         pc = UserPc.objects.get(id=pk)
         pc.delete()
-        return redirect('/')
+        return JsonResponse({'code': '200'})
 
 class ShowDataDisk(View):
     def get(self, request, pk, pc):

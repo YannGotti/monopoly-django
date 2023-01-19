@@ -12,7 +12,7 @@
         </div>
         <div class="row d-flex justify-content-center back_color" id="row-pc">
             {% for pc in data %}
-            <div class="col-lg-3 col-5 mt-2 mb-2">
+            <div class="col-lg-3 col-5 mt-2 mb-2" id="pc-{{ pc.id }}">
                 <div class="card text-white bg-dark mb-3 shadow-sm">
                     <div class="card-body">
                     <h5 class="card-title">{{ pc.name }}</h5>
@@ -20,7 +20,7 @@
                     <h6 class="card-subtitle mb-2 text-muted">mac_adress : {{ pc.mac_adress }}</h6>
                     <div class="mt-3 mb-2 ">
                         <a href="{% url 'pc' pc.id%}" class="btn btn-light text-weight-buttons">Посмотреть</a>
-                        <a href="{% url 'delete_pc' pc.id%}" class="btn btn-danger text-weight-buttons">Удалить</a>
+                        <a class="btn btn-danger text-weight-buttons" onclick="request_del_pc(`{{pc.id}}`)">Удалить</a>
                     </div>
                     
                     </div>
@@ -40,14 +40,31 @@
         <input type="text" name="mac_adress">
         <input type="text" name="description">
     </form>
-    <h5 class="text-white-50" id="submit">ОТПРАВИТЬ</h5>
+    <h5 class="text-white-50" onclick="add_pc()">ОТПРАВИТЬ</h5>
 
 </div>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
 <script>
-    document.querySelector("#submit").onclick = function add_pc() {
+
+    function request_del_pc(pk) {
+        $.ajax({
+            url: "pc/delete/"+ pk +"/",
+            data: {
+                'pk': pk
+            },
+            processData: false,
+            contentType: false,
+            type: 'GET',
+            success: function(data){
+                var pc = document.querySelector("#pc-" + pk);
+                pc.remove()
+            }
+        });
+    }
+
+    function add_pc() {
 
         var formElement = document.querySelector("#formPc");
         var formData = new FormData(formElement);
@@ -90,7 +107,7 @@
 
             let row = document.getElementById("row-pc");
 
-            row.innerHTML += `<div class="col-lg-3 col-5 mt-2 mb-2">
+            row.innerHTML += `<div class="col-lg-3 col-5 mt-2 mb-2" id="pc-`+ pc[0] + `">
                 <div class="card text-white bg-dark mb-3 shadow-sm">
                     <div class="card-body">
                         <h5 class="card-title">` + pc[1] + `</h5>
@@ -98,7 +115,7 @@
                         <h6 class="card-subtitle mb-2 text-muted">mac_adress : ` + pc[3] + `</h6>
                         <div class="mt-3 mb-2 ">
                             <a href="pc/`+ pc[0] + `/" class="btn btn-light text-weight-buttons">Посмотреть</a>
-                            <a href="pc/delete/`+ pc[0] + `/" class="btn btn-danger text-weight-buttons">Удалить</a>
+                            <a class="btn btn-danger text-weight-buttons" onclick="request_del_pc(`+ pc[0] + `)">Удалить</a>
                         </div>
                     </div>
                 </div>
