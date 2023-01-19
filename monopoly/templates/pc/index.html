@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block content %}
+{% if user.is_superuser %}
 <section>
     <div class="container mt-2 mb-2 ">
 
@@ -30,7 +31,6 @@
     </div>
 </section>
 
-{% if user.is_superuser %}
 <section class="animate__animated animate__fadeIn">
     <div class="container">
         <div class="row justify-content-center">
@@ -66,6 +66,18 @@
         </div>
     </div>
 </section>
+
+{% else %} 
+<div class="container mt-2 mb-2 ">
+
+    <div class="row d-flex justify-content-center back_color">
+        <div class="col-4 mt-3 mb-3" style="text-align: center;">
+            <h4 class="text-light">Монополия</h4>
+            <p class="text-secondary">В процессе разработки...</p>
+        </div>
+    </div>
+</div>
+
 {% endif %}
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
