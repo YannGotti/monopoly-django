@@ -51,22 +51,23 @@ function select_last_pc(){
             add_pc(pc)
         }
     });
+}
+    
 
-    function add_pc(pc){
-        let row = document.getElementById("row-pc");
+function add_pc(pc){
+    let row = document.getElementById("row-pc");
 
-        row.innerHTML += `<div class="col-lg-3 col-5 mt-2 mb-2  animate__animated animate__fadeIn" id="pc-`+ pc[0] + `">
-            <div class="card text-white bg-dark mb-3 shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">` + pc[1] + `</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">ip : ` + pc[2] + `</h6>
-                    <h6 class="card-subtitle mb-2 text-muted">mac_adress : ` + pc[3] + `</h6>
-                    <div class="mt-3 mb-2 ">
-                        <a href="pc/`+ pc[0] + `/" class="btn btn-light text-weight-buttons">Посмотреть</a>
-                        <a class="btn btn-danger text-weight-buttons" onclick="request_del_pc(`+ pc[0] + `)">Удалить</a>
-                    </div>
+    row.innerHTML += `<div class="col-lg-3 col-5 mt-2 mb-2  animate__animated animate__fadeIn" id="pc-`+ pc[0] + `">
+        <div class="card text-white bg-dark mb-3 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">` + pc[1] + `</h5>
+                <h6 class="card-subtitle mb-2 text-muted">ip : ` + pc[2] + `</h6>
+                <h6 class="card-subtitle mb-2 text-muted">mac_adress : ` + pc[3] + `</h6>
+                <div class="mt-3 mb-2 ">
+                    <a href="pc/`+ pc[0] + `/" class="btn btn-light text-weight-buttons">Посмотреть</a>
+                    <a class="btn btn-danger text-weight-buttons" onclick="request_del_pc(`+ pc[0] + `)">Удалить</a>
                 </div>
             </div>
-        </div>`
-    }
+        </div>
+    </div>`
 }

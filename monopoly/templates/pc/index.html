@@ -15,14 +15,13 @@
             <div class="col-lg-3 col-5 mt-2 mb-2 animate__animated animate__fadeIn" id="pc-{{ pc.id }}">
                 <div class="card text-white bg-dark mb-3 shadow-sm">
                     <div class="card-body">
-                    <h5 class="card-title">{{ pc.name }}</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">ip : {{ pc.ip }}</h6>
-                    <h6 class="card-subtitle mb-2 text-muted">mac_adress : {{ pc.mac_adress }}</h6>
-                    <div class="mt-3 mb-2 ">
-                        <a href="{% url 'pc' pc.id%}" class="btn btn-light text-weight-buttons">Посмотреть</a>
-                        <a class="btn btn-danger text-weight-buttons" onclick="request_del_pc(`{{pc.id}}`)">Удалить</a>
-                    </div>
-                    
+                        <h5 class="card-title">{{ pc.name }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">ip : {{ pc.ip }}</h6>
+                        <h6 class="card-subtitle mb-2 text-muted">mac_adress : {{ pc.mac_adress }}</h6>
+                        <div class="mt-3 mb-2 ">
+                            <a href="{% url 'pc' pc.id%}" class="btn btn-light text-weight-buttons">Посмотреть</a>
+                            <a class="btn btn-danger text-weight-buttons" onclick="request_del_pc(`{{pc.id}}`)">Удалить</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -32,17 +31,41 @@
 </section>
 
 
-<div>
-    <form id="formPc">
-        {% csrf_token %}
-        <input type="text" name="name">
-        <input type="text" name="ip">
-        <input type="text" name="mac_adress">
-        <input type="text" name="description">
-    </form>
-    <h5 class="text-white-50" onclick="request_add_pc()">ОТПРАВИТЬ</h5>
+<section>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-5">
+                <form id="formPc">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                    <label class="form-label text-light">Имя компа</label>
+                    <input type="text" class="form-control text-dark text-weight-form" name="name">
+                    </div>
 
-</div>
+                    <div class="mb-3">
+                        <label class="form-label text-light">IP компа</label>
+                        <input type="text" class="form-control text-dark text-weight-form" name="ip">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-light">MAC-ADRESS компа</label>
+                        <input type="text" class="form-control text-dark text-weight-form" name="mac_adress">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-light">Описание</label>
+                        <textarea class="form-control text-dark text-weight-form" type="text" rows="3" name="description"></textarea>
+                      </div>
+                    
+                    <div class="row justify-content-center">
+                        <a class="col-6 btn btn-dark text-weight-buttons" onclick="request_add_pc()">Создать</a>
+                    </div>
+                    
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="{% static 'js/ajax.js' %}"></script>
