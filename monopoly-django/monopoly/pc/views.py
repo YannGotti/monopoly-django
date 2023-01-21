@@ -28,6 +28,25 @@ class AddPc(View):
         form.save()
         return HttpResponse('Ok')
 
+class ClietAddPc(View):
+    def get(self, request):
+        
+        data = request.GET
+
+        pc = UserPc(
+                name=data.get("name"),
+                ip=data.get("ip"),
+                mac_adress=data.get("mac_adress"),
+                description=data.get("description")
+            )
+
+        if (UserPc.objects.filter(name = data.get("name"))):
+            return HttpResponse('PC already created')
+
+        pc.save()
+        return HttpResponse('Ok')
+
+
 class SelectLastPc(View):
     '''последний комп json'''
     def get(self, request):
