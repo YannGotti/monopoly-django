@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <iterator>
 #include <clocale>
+#include <stdio.h>
 
 using namespace std;
 
@@ -84,6 +85,8 @@ void RequestAddPc(string url, string name, string ip, string mac_adress, string 
 
     RequestStatusCode(r.status_code);
 }
+
+
 #pragma endregion
 
 #pragma region Requests data disks pc
@@ -116,23 +119,66 @@ void RequestAddHardDisk(string url, string name) {
 
     RequestStatusCode(r.status_code);
 }
-#pragma endregion
+
+string SelectSerialNumberDisk(string d) {
+    char NameBuffer[MAX_PATH];
+    char SysNameBuffer[MAX_PATH];
+    DWORD VSNumber;
+    DWORD MCLength;
+    DWORD FileSF;
+
+    LPCSTR disk = d.append("\\").c_str();
+
+    if (GetVolumeInformation(disk, NameBuffer, sizeof(NameBuffer),
+        &VSNumber, &MCLength, &FileSF, SysNameBuffer, sizeof(SysNameBuffer)))
+    {
+
+        return to_string(VSNumber);
+    }
+}
+
+string GetDiskSize(LPCSTR drive)
+{
+    __int64 totalbytes;
+    char buf[255];
+    GetDiskFreeSpaceExA(drive, NULL, (PULARGE_INTEGER)&totalbytes, NULL);
+    return (to_string(totalbytes));
+}
+
+void RequestAddInfoDisk(string url, string disk) {
+    url.append("pc/client/info_disk/");
+
+    auto r = cpr::Get(cpr::Url{ url },
+        cpr::Parameters{
+            {"name", disk},
+            {"full_name", "KINGSTON"},
+            {"serial_number", SelectSerialNumberDisk(disk)},
+            {"range", GetDiskSize(disk.c_str()).substr(0,3)}
+        });
+
+    RequestStatusCode(r.status_code);
+}
 
 void RequestCreateDisks(string url) {
     list<string> data = GetHardDrivesPc();
     for (string disk : data) {
+        disk = disk.substr(0, 2);
         RequestAddHardDisk(url, disk);
+        RequestAddInfoDisk(url, disk);
     }
 }
+
+
+#pragma endregion
+
 
 int main()
 {
     setlocale(LC_ALL, "Russian");
     string url = "http://127.0.0.1:8000/";
-    RequestAddPc(url, GetNamePc(), RequestGetIp(), GetMacAddress(), "Administraton inserting....");
-    RequestCreateDisks(url);
-    
-    //GetHardDrivesPc();
+    RequestAddPc(url, GetNamePc(), RequestGetIp(), GetMacAddress(), "Administraton inserting...."); //добавление пк
+    RequestCreateDisks(url); // создание дисков
 
+    //SelectHardDiskInfo();
 }
 

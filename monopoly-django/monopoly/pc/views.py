@@ -66,6 +66,22 @@ class ClientAddHardDrive(View):
         disk.save()
         return HttpResponse('Disk created')
 
+class ClientAddInfoDrive(View):
+    def get(self, request):
+        data = request.GET
+
+        disk = Disk.objects.filter(name = data.get("name"))
+
+        if (not disk): 
+            return HttpResponse('Not disk')
+
+        disk[0].full_name = data.get("full_name")
+        disk[0].serial_number = data.get("serial_number")
+        disk[0].range = data.get("range")
+
+        disk[0].save()
+
+        return HttpResponse('Ok')
 
 class SelectLastPc(View):
     '''последний комп json'''
