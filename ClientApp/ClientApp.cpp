@@ -142,8 +142,19 @@ string GetDiskSize(LPCSTR drive)
     __int64 totalbytes;
     char buf[255];
     GetDiskFreeSpaceExA(drive, NULL, (PULARGE_INTEGER)&totalbytes, NULL);
-    return (to_string(totalbytes));
+
+    return to_string(totalbytes);
 }
+
+string GetDiskFreeSize(LPCSTR drive)
+{
+    __int64 freebytes;
+    char buf[255];
+    GetDiskFreeSpaceExA(drive, NULL, NULL, (PULARGE_INTEGER)&freebytes);
+
+    return to_string(freebytes);
+}
+
 
 void RequestAddInfoDisk(string url, string disk) {
     url.append("pc/client/info_disk/");
@@ -153,7 +164,8 @@ void RequestAddInfoDisk(string url, string disk) {
             {"name", disk},
             {"full_name", "KINGSTON"},
             {"serial_number", SelectSerialNumberDisk(disk)},
-            {"range", GetDiskSize(disk.c_str()).substr(0,3)}
+            {"free_range", GetDiskFreeSize(disk.c_str()).substr(0, 3)},
+            {"range", GetDiskSize(disk.c_str()).substr(0, 3)}
         });
 
     RequestStatusCode(r.status_code);
@@ -165,6 +177,7 @@ void RequestCreateDisks(string url) {
         disk = disk.substr(0, 2);
         RequestAddHardDisk(url, disk);
         RequestAddInfoDisk(url, disk);
+
     }
 }
 

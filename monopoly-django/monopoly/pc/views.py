@@ -75,9 +75,9 @@ class ClientAddInfoDrive(View):
         if (not disk): 
             return HttpResponse('Not disk')
 
-        disk[0].full_name = data.get("full_name")
         disk[0].serial_number = data.get("serial_number")
         disk[0].range = data.get("range")
+        disk[0].free_range = data.get("free_range")
 
         disk[0].save()
 
