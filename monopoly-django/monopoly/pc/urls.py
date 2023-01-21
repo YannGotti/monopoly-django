@@ -11,4 +11,5 @@ urlpatterns = [
     path('pc/ajax/select_last_pc/', views.SelectLastPc.as_view(), name='select_last_pc'),
 
     path('pc/client/add_pc/', views.ClietAddPc.as_view()),
+    path('pc/client/add_disk/', views.ClientAddHardDrive.as_view()),
 ]

@@ -46,6 +46,31 @@ class ClietAddPc(View):
         pc.save()
         return HttpResponse('Ok')
 
+class ClientAddHardDrive(View):
+    def get(self, request):
+        
+        data = request.GET
+
+        pc = UserPc.objects.filter(name = data.get("pc_name"))
+
+        if (pc):
+            disk = Disk(
+                    name=data.get("name"),
+                    full_name=data.get("full_name"),
+                    serial_number=data.get("serial_number"),
+                    range=int(data.get("range")),
+                    user_pc=pc
+                )
+
+            if (Disk.objects.filter(serial_number = data.get("serial_number"))):
+                return HttpResponse('Disk already have')
+
+            disk.save()
+            
+        else: return HttpResponse('Pc not found')
+
+        
+
 
 class SelectLastPc(View):
     '''последний комп json'''
