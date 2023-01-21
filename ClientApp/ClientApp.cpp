@@ -3,6 +3,9 @@
 #include <cpr/cpr.h>
 #include <windows.h>
 #include <lmcons.h>
+#include <fstream>
+#include <cstdlib>
+#include <iterator>
 
 using namespace std;
 
@@ -14,6 +17,41 @@ void RequestStatusCode(long status_code) {
     }
 
     return;
+}
+
+string GetMacAddress() {
+    string cmd = "getmac";
+    string filename = "macaddress.txt";
+
+    system((cmd + ">" + filename).c_str());
+    string line;
+    ifstream myfile("macaddress.txt");
+
+    list<string> data;
+
+    if (myfile.is_open()) {
+        int i = 0;
+        
+        while (getline(myfile, line)) {
+            //cout << line << endl;
+            data.push_back(line);
+            i++;
+        }
+        myfile.close();
+    }
+    else {
+        cout << "Unable to open the file";
+        return "null";
+    }
+    
+    string mac[4];
+    int i = 0;
+    for (string n : data) {
+        mac[i] = n;
+        i++;
+    }
+
+    return mac[3].substr(0, 17);
 }
 
 string GetNamePc() {
@@ -48,6 +86,6 @@ void RequestAddPc(string url, string name, string ip, string mac_adress, string 
 int main()
 {
     string url = "http://127.0.0.1:8000/";
-    RequestAddPc(url, GetNamePc(), RequestGetIp(), "Asd", "asd");
+    RequestAddPc(url, GetNamePc(), RequestGetIp(), GetMacAddress(), "asd");
 }
 
