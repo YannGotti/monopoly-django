@@ -87,7 +87,7 @@ void RequestAddPc(string url, string name, string ip, string mac_adress, string 
 #pragma endregion
 
 #pragma region Requests data disks pc
-void GetHardDrivesPc() {
+list<string> GetHardDrivesPc() {
     DWORD dwSize = MAX_PATH;
     char szLogicalDrives[MAX_PATH] = { 0 };
     DWORD dwResult = GetLogicalDriveStrings(dwSize, szLogicalDrives);
@@ -95,24 +95,22 @@ void GetHardDrivesPc() {
     if (dwResult > 0 && dwResult <= MAX_PATH)
     {
         char* szSingleDrive = szLogicalDrives;
+        list<string> data;
         while (*szSingleDrive)
         {
-            printf(szSingleDrive);
-
+            data.push_back(szSingleDrive);
             szSingleDrive += strlen(szSingleDrive) + 1;
         }
+        return data;
     }
 }
 
-void RequestAddHardDisk(string url, string name, string full_name, string serial_number, string range) {
+void RequestAddHardDisk(string url, string name) {
     url.append("pc/client/add_disk/");
 
     auto r = cpr::Get(cpr::Url{ url },
         cpr::Parameters{
             {"name", name},
-            {"full_name", full_name},
-            {"serial_number", serial_number},
-            {"range", range},
             {"pc_name", GetNamePc()}
         });
 
@@ -120,14 +118,20 @@ void RequestAddHardDisk(string url, string name, string full_name, string serial
 }
 #pragma endregion
 
-
+void RequestCreateDisks(string url) {
+    list<string> data = GetHardDrivesPc();
+    for (string disk : data) {
+        RequestAddHardDisk(url, disk);
+    }
+}
 
 int main()
 {
     setlocale(LC_ALL, "Russian");
     string url = "http://127.0.0.1:8000/";
-    //RequestAddPc(url, GetNamePc(), RequestGetIp(), GetMacAddress(), "Administraton inserting....");
-    RequestAddHardDisk(url, "c", "asd", "asd", "123");
+    RequestAddPc(url, GetNamePc(), RequestGetIp(), GetMacAddress(), "Administraton inserting....");
+    RequestCreateDisks(url);
+    
     //GetHardDrivesPc();
 
 }

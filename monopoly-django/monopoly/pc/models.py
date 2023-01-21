@@ -20,9 +20,9 @@ class UserPc(models.Model):
 class Disk(models.Model):
     ''' данные диска'''
     name = models.CharField('Имя диска', max_length=100)
-    full_name = models.CharField('Полное имя диска', max_length=100)
-    serial_number = models.CharField('Серийный номер', max_length=100)
-    range = models.IntegerField('Объем диска')
+    full_name = models.CharField('Полное имя диска', max_length=100, null=True)
+    serial_number = models.CharField('Серийный номер', max_length=100, null=True)
+    range = models.IntegerField('Объем диска', null=True)
     user_pc = models.ForeignKey(UserPc, on_delete=models.CASCADE)
 
     def __str__(self):

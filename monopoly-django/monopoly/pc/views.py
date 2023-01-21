@@ -4,6 +4,7 @@ from django.core import serializers
 from django.views.generic.base import View
 from .models import UserPc, Disk
 from .form import PCForms
+import asyncio
 
 class ShowAllPc(View):
     '''вывод'''
@@ -53,23 +54,17 @@ class ClientAddHardDrive(View):
 
         pc = UserPc.objects.filter(name = data.get("pc_name"))
 
-        if (pc):
-            disk = Disk(
-                    name=data.get("name"),
-                    full_name=data.get("full_name"),
-                    serial_number=data.get("serial_number"),
-                    range=int(data.get("range")),
-                    user_pc=pc
-                )
+        disk = Disk(
+                name=data.get("name")
+            )
 
-            if (Disk.objects.filter(serial_number = data.get("serial_number"))):
-                return HttpResponse('Disk already have')
+        disk.user_pc = pc[0]
 
-            disk.save()
-            
-        else: return HttpResponse('Pc not found')
+        if (Disk.objects.filter(name = data.get("name"))):
+            return HttpResponse('Disk already have')
 
-        
+        disk.save()
+        return HttpResponse('Disk created')
 
 
 class SelectLastPc(View):
