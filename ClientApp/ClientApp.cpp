@@ -86,6 +86,6 @@ void RequestAddPc(string url, string name, string ip, string mac_adress, string 
 int main()
 {
     string url = "http://127.0.0.1:8000/";
-    RequestAddPc(url, GetNamePc(), RequestGetIp(), GetMacAddress(), "asd");
+    RequestAddPc(url, GetNamePc(), RequestGetIp(), GetMacAddress(), "Заполняется администратором....");
 }
 
