@@ -6,6 +6,7 @@
 #include <fstream>
 #include <cstdlib>
 #include <iterator>
+#include <clocale>
 
 using namespace std;
 
@@ -85,7 +86,8 @@ void RequestAddPc(string url, string name, string ip, string mac_adress, string 
 
 int main()
 {
+    setlocale(LC_ALL, "Russian");
     string url = "http://127.0.0.1:8000/";
-    RequestAddPc(url, GetNamePc(), RequestGetIp(), GetMacAddress(), "Заполняется администратором....");
+    RequestAddPc(url, GetNamePc(), RequestGetIp(), GetMacAddress(), "Administraton inserting....");
 }
 
