@@ -1,4 +1,68 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
+
+<section>
+    <div class="container">
+        <div class="row d-flex justify-content-center back_color">
+            <div class="col-12 mt-1 mb-1" style="text-align: center;">
+                <h5 class="text-light">Данные диска </h5>
+            </div>
+        </div>
+
+        <div class="row d-flex justify-content-center">
+            <div class="col-3 mt-5 mb-1" style="text-align: left;">
+                <div class="card text-white bg-dark mb-3 shadow-sm">
+                    <div class="card-body">
+                        <div class="color-panel" id="folders_1">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-3 mt-5 mb-1" style="text-align: left;">
+                <div class="card text-white bg-dark mb-3 shadow-sm">
+                    <div class="card-body">
+                        <div class="color-panel" id="folders_2">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+<script>
+    function innerData(data = JSON.parse(`{{ data }}`)) {
+        let folders_1 = document.getElementById("folders_1");
+        let folders_2 = document.getElementById("folders_2");
+
+        for (let i = 0; i < data.length / 2; i++){
+            folders_1.innerHTML += 
+            `
+            <div class="row">
+                <button class="btn btn-secondary  mt-1 mb-1"  style="text-align: left;">` + data[i] + `</button>
+            </div>
+            `
+        }
+
+        for (let i = data.length / 2; i < data.length; i++){
+            folders_2.innerHTML += 
+            `
+            <div class="row">
+                <button class="btn btn-secondary mt-1 mb-1" style="text-align: left;">` + data[i] + `</button>
+            </div>
+            `
+        }
+    }
+
+    innerData()
+
+</script>
+
 {% endblock %}
+

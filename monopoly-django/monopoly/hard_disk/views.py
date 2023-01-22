@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, HttpResponse
+from django.utils.safestring import SafeString
 from django.http import JsonResponse
 from django.core import serializers
 from django.views.generic.base import View
@@ -18,11 +19,10 @@ class SelectDisk(View):
         data = DataDisk.objects.filter(disk = disk)
 
         context = {
-            'disk' : disk
+            'data' : SafeString(data[0].data)
         }
 
-        return HttpResponse(data[0].data)
-        #return render(request, 'disk/disk.html', context = context)
+        return render(request, 'disk/disk.html', context = context)
 
 class ClientDataDisk(View):
     def get(self, request):
