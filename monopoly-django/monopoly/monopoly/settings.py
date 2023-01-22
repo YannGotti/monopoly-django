@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'blog.apps.BlogConfig',
     'pc.apps.PcConfig',
+    'hard_disk.apps.HardDiskConfig',
 ]
 
 MIDDLEWARE = [

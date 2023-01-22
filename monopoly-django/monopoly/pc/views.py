@@ -4,7 +4,6 @@ from django.core import serializers
 from django.views.generic.base import View
 from .models import UserPc, Disk
 from .form import PCForms
-import asyncio
 
 class ShowAllPc(View):
     '''вывод'''
@@ -112,16 +111,3 @@ class DeletePc(View):
         pc = UserPc.objects.get(id=pk)
         pc.delete()
         return JsonResponse({'code': '200'})
-
-class ShowDataDisk(View):
-    def get(self, request, pk, pc):
-        try:
-            disk = Disk.objects.get(id=pk)
-        except Disk.DoesNotExist:
-            return render(request, '404.html')
-
-        context = {
-            'disk': disk
-        }
-
-        return redirect(f'/pc/{pc}/')

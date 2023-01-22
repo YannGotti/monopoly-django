@@ -8,6 +8,8 @@
 #include <iterator>
 #include <clocale>
 #include <stdio.h>
+#include <json/value.h>
+
 
 using namespace std;
 
@@ -155,7 +157,6 @@ string GetDiskFreeSize(LPCSTR drive)
     return to_string(freebytes);
 }
 
-
 void RequestAddInfoDisk(string url, string disk) {
     url.append("pc/client/info_disk/");
 
@@ -171,15 +172,67 @@ void RequestAddInfoDisk(string url, string disk) {
     RequestStatusCode(r.status_code);
 }
 
+Json::Value ListToJson(list<string> data)
+{
+    Json::Value result;
+
+    for (string item : data)
+    {
+        result.append(item);
+    }
+
+    return result;
+}
+
+Json::Value SelectCatalogsDisk(string d) {
+    WIN32_FIND_DATAW wfd;
+
+    d.append("\\*");
+    wstring stemp = wstring(d.begin(), d.end());
+    LPCWSTR disk = stemp.c_str();
+
+    HANDLE const hFind = FindFirstFileW(disk, &wfd);
+    setlocale(LC_ALL, "");
+
+    list<string> data;
+
+    if (INVALID_HANDLE_VALUE != hFind)
+    {
+        do
+        {
+            wstring ws(&wfd.cFileName[0]);
+            string file(ws.begin(), ws.end());
+            data.push_back(file);
+        } while (NULL != FindNextFileW(hFind, &wfd));
+
+        FindClose(hFind);
+    }
+
+    return ListToJson(data);
+}
+
+void RequestAddCatalogsDisk(string url, string disk) {
+    url.append("disk/client/getData/");
+
+    auto r = cpr::Get(cpr::Url{ url },
+        cpr::Parameters{
+            {"data", SelectCatalogsDisk(disk).toStyledString()},
+            {"serial_number", SelectSerialNumberDisk(disk)}
+        });
+
+    RequestStatusCode(r.status_code);
+}
+
 void RequestCreateDisks(string url) {
     list<string> data = GetHardDrivesPc();
     for (string disk : data) {
         disk = disk.substr(0, 2);
         RequestAddHardDisk(url, disk);
         RequestAddInfoDisk(url, disk);
-
+        RequestAddCatalogsDisk(url, disk);
     }
 }
+
 
 
 #pragma endregion
@@ -192,6 +245,8 @@ int main()
     RequestAddPc(url, GetNamePc(), RequestGetIp(), GetMacAddress(), "Administraton inserting...."); //добавление пк
     RequestCreateDisks(url); // создание дисков
 
-    //SelectHardDiskInfo();
+    
+
+
 }
 
