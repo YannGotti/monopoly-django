@@ -11,7 +11,7 @@
         <div class="row d-flex justify-content-center back_color">
             <div class="col-12 mt-1 mb-1" style="text-align: right;">
                 <a href="{% url 'pc' pc.id%}"><button class="btn btn-dark text-weight-buttons animate__animated animate__fadeIn">Назад</button></a>
-                <a href="{% url 'select_main_folder' disk.id%}"><button class="btn btn-dark text-weight-buttons animate__animated animate__fadeIn">С:\\</button></a>
+                <a href="{% url 'select_main_folder' disk.id%}"><button class="btn btn-dark text-weight-buttons animate__animated animate__fadeIn">{{ disk.name }}\</button></a>
             </div>
         </div>
 
