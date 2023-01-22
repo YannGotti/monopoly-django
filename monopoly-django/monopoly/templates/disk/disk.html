@@ -1,68 +1,103 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
+{% if user.is_superuser %}
 
+
+    
 <section>
     <div class="container">
+        
+        <div class="row d-flex justify-content-center back_color">
+            <div class="col-12 mt-1 mb-1" style="text-align: right;">
+                <a href="{% url 'pc' pc.id%}"><button class="btn btn-dark text-weight-buttons animate__animated animate__fadeIn">Назад</button></a>
+                <a href="{% url 'select_main_folder' disk.id%}"><button class="btn btn-dark text-weight-buttons animate__animated animate__fadeIn">С:\\</button></a>
+            </div>
+        </div>
+
+        {% if state %}
         <div class="row d-flex justify-content-center back_color">
             <div class="col-12 mt-1 mb-1" style="text-align: center;">
                 <h5 class="text-light">Данные диска </h5>
             </div>
         </div>
 
-        <div class="row d-flex justify-content-center">
-            <div class="col-3 mt-5 mb-1" style="text-align: left;">
-                <div class="card text-white bg-dark mb-3 shadow-sm">
-                    <div class="card-body">
-                        <div class="color-panel" id="folders_1">
-                            
-                        </div>
-                    </div>
-                </div>
+        <div class="row d-flex justify-content-center back_color">
+            <div class="col-6 mt-5 mb-1" style="text-align: left;">
+                <h5 class="text-light">Текущий путь: {{ path }}</h5>
             </div>
-
-            <div class="col-3 mt-5 mb-1" style="text-align: left;">
-                <div class="card text-white bg-dark mb-3 shadow-sm">
-                    <div class="card-body">
-                        <div class="color-panel" id="folders_2">
-                            
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </div>
 
+        <div class="row d-flex justify-content-center">
+            <div class="col-5 mt-2 mb-1" style="text-align: right;">
+                <div class="card text-white bg-dark mb-3 shadow-sm animate__animated animate__fadeIn">
+                    <div class="card-body" id="folders_1">
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-5 mt-2 mb-1" style="text-align: left;">
+                <div class="card text-white bg-dark mb-3 shadow-sm animate__animated animate__fadeIn">
+                    <div class="card-body" id="folders_2">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% else %}
+        <div class="row d-flex justify-content-center back_color">
+            <div class="col-12 mt-1 mb-1" style="text-align: center;">
+                <h5 class="text-light">Пк еще не обработал запрос</h5>
+            </div>
+        </div>
+        {% endif %}
+
     </div>
+
 </section>
 
 <script>
-    function innerData(data = JSON.parse(`{{ data }}`)) {
+    function innerData() {
+        let data = JSON.parse(`{{ data }}`)
+        let state = `{{ state }}`
         let folders_1 = document.getElementById("folders_1");
         let folders_2 = document.getElementById("folders_2");
+
+        if (state == false || folders_1 == null || folders_2 == null){
+            setTimeout(() => {
+                location.reload()
+                return
+            }, 5000);
+        }
+
+        folders_1.innerHTML = `<div></div>`
+        folders_2.innerHTML = `<div></div>`
+
+        if (data == null){
+            return
+        }
 
         for (let i = 0; i < data.length / 2; i++){
             folders_1.innerHTML += 
             `
-            <div class="row">
-                <button class="btn btn-secondary  mt-1 mb-1"  style="text-align: left;">` + data[i] + `</button>
-            </div>
+            <a href="/disk/{{ disk.id }}/updateData/?filename=`+ data[i] +`"> <button class="btn btn-light mt-1 mb-1 text-weight-form text-dark">` + data[i] + `</button></a>
             `
         }
 
         for (let i = data.length / 2; i < data.length; i++){
             folders_2.innerHTML += 
             `
-            <div class="row">
-                <button class="btn btn-secondary mt-1 mb-1" style="text-align: left;">` + data[i] + `</button>
-            </div>
+            <a href="/disk/{{ disk.id }}/updateData/?filename=`+ data[i] +`"> <button class="btn btn-light mt-1 mb-1 text-weight-form text-dark">` + data[i] + `</button></a>
             `
         }
     }
 
     innerData()
+    setInterval(innerData, 15000);
 
 </script>
-
+{% endif %}
 {% endblock %}
 

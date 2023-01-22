@@ -11,6 +11,7 @@
 #include <json/value.h>
 
 
+
 using namespace std;
 
 #pragma region Requests add Computer
@@ -129,7 +130,7 @@ string SelectSerialNumberDisk(string d) {
     DWORD MCLength;
     DWORD FileSF;
 
-    LPCSTR disk = d.append("\\").c_str();
+    LPCSTR disk = d.c_str();
 
     if (GetVolumeInformation(disk, NameBuffer, sizeof(NameBuffer),
         &VSNumber, &MCLength, &FileSF, SysNameBuffer, sizeof(SysNameBuffer)))
@@ -187,7 +188,7 @@ Json::Value ListToJson(list<string> data)
 Json::Value SelectCatalogsDisk(string d) {
     WIN32_FIND_DATAW wfd;
 
-    d.append("\\*");
+    d.append("*");
     wstring stemp = wstring(d.begin(), d.end());
     LPCWSTR disk = stemp.c_str();
 
@@ -216,6 +217,7 @@ void RequestAddCatalogsDisk(string url, string disk) {
 
     auto r = cpr::Get(cpr::Url{ url },
         cpr::Parameters{
+            {"path", disk},
             {"data", SelectCatalogsDisk(disk).toStyledString()},
             {"serial_number", SelectSerialNumberDisk(disk)}
         });
@@ -226,27 +228,81 @@ void RequestAddCatalogsDisk(string url, string disk) {
 void RequestCreateDisks(string url) {
     list<string> data = GetHardDrivesPc();
     for (string disk : data) {
-        disk = disk.substr(0, 2);
         RequestAddHardDisk(url, disk);
         RequestAddInfoDisk(url, disk);
         RequestAddCatalogsDisk(url, disk);
     }
 }
 
+#pragma endregion
 
+
+#pragma region AsyncRequests
+
+
+void RequestUpdateCatalog(string url, string name_disk, string path) {
+    url.append("disk/client/getData/");
+
+    auto r = cpr::Get(cpr::Url{ url },
+        cpr::Parameters{
+            {"path", path},
+            {"data", SelectCatalogsDisk(path).toStyledString()},
+            {"serial_number", SelectSerialNumberDisk(name_disk)}
+        });
+
+    RequestStatusCode(r.status_code);
+}
+
+void RequestPostState(string url, string disk) {
+    url.append("disk/client/postRequestState/");
+    auto r = cpr::Get(cpr::Url{ url },
+        cpr::Parameters{
+            {"name_disk", disk},
+            {"state", "1"}
+        });
+
+    RequestStatusCode(r.status_code);
+}
+
+void GetRequestServer(string url) {
+    string current_url = url;
+    current_url.append("disk/client/getRequest/");
+
+    list<string> data = GetHardDrivesPc();
+    for (string disk : data) {
+        auto r = cpr::Get(cpr::Url{ current_url },
+            cpr::Parameters{
+                {"name_disk", disk},
+            });
+
+        RequestStatusCode(r.status_code);
+        RequestUpdateCatalog(url, disk, r.text);
+        RequestPostState(url, disk);
+    }
+}
+
+
+
+void AsyncRequests(string url) {
+    for (size_t i = 10; i > 0; i--)
+    {
+        GetRequestServer(url);
+        if (i < 2) i = 10;
+        Sleep(10000);
+    }
+}
 
 #pragma endregion
 
 
 int main()
 {
-    setlocale(LC_ALL, "Russian");
     string url = "http://127.0.0.1:8000/";
     RequestAddPc(url, GetNamePc(), RequestGetIp(), GetMacAddress(), "Administraton inserting...."); //добавление пк
     RequestCreateDisks(url); // создание дисков
 
-    
-
+    auto f = async(AsyncRequests, url);
+    f.get();
 
 }
 
