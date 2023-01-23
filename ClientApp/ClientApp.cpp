@@ -317,13 +317,13 @@ void RequestUpdateFileData(string url, string name_disk, string path, Json::Valu
 void RequestPostFileData(string url,string name_disk, string path) {
     list<string> data = GetDataFile(path);
     string all_data;
+    Json::Value result;
+
 
     for (string line : data)
     {
-        all_data.append(line);
+        result.append(line);
     }
-    Json::Value result;
-    result.append(all_data);
 
     RequestUpdateFileData(url, name_disk, path, result);
 }
@@ -360,7 +360,7 @@ void AsyncRequests(string url) {
     {
         GetRequestServer(url);
         if (i < 2) i = 10;
-        Sleep(5000);
+        Sleep(1000);
     }
 }
 
