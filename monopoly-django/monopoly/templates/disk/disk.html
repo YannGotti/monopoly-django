@@ -94,28 +94,31 @@
         if (data == null){
             data = ["null"]
         }
-
-        for (let i = 0; i < data.length; i++){
-
-            if (data[i] == undefined
-            || data[i].includes('.tmp')
-            || data[i].includes('.sys')
-            || data[i].includes('.Bin')
-            || data[i].includes('.log')
-            || data[i].includes('.dat')
-            || data[i].includes('$')
-            || data[i].includes('null')
-            ){
-                
-                
-            }
-            else{
-                folders.innerHTML += 
-                `
-                <a href="updateData/?filename=`+ data[i] +`"> <button class="btn btn-light mt-1 mb-1 text-weight-form text-dark">` + data[i] + `</button></a>
-                `
+        if (folders.childElementCount == 0){
+            for (let i = 0; i < data.length; i++){
+                if (data[i] == undefined
+                || data[i].includes('.tmp')
+                || data[i].includes('.sys')
+                || data[i].includes('.Bin')
+                || data[i].includes('.log')
+                || data[i].includes('.dat')
+                || data[i].includes('$')
+                || data[i].includes('null')
+                ){
+                    
+                    
+                }
+                else{
+                    folders.innerHTML += 
+                    `
+                    <a href="updateData/?filename=`+ data[i] +`">
+                        <button class="btn btn-light mt-1 mb-1 text-weight-form text-dark">` + data[i] + `</button>
+                    </a>
+                    `
+                }
             }
         }
+        
     }
 
     innerData()
