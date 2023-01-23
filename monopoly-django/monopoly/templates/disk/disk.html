@@ -31,24 +31,26 @@
             </div>
         </div>
 
-        <form class="row g-3 d-flex justify-content-center back_color mb-1" method="get" action="clear/">
-            <div class="col-10">
-                <input type="text" class="form-control text-dark text-weight-form" name="path" placeholder="{{path}}" value="{{path}}">
-            </div>
-        </form>
+        
 
         <div class="row d-flex justify-content-center">
-            <div class="col-5 mt-2 mb-1" style="text-align: right;">
-                <div class="card text-white bg-dark mb-3 shadow-sm animate__animated animate__fadeIn">
-                    <div class="card-body" id="folders_1">
-
+            <div class="col-10" style="text-align: left;">
+                <div class="card text-white bg-dark mb-1 shadow-sm animate__animated animate__fadeIn">
+                    <div class="card-body">
+                        <form class="row d-flex justify-content-center back_color" method="get" action="clear/">
+                            <div class="col-12">
+                                <input type="text" class="form-control text-dark text-weight-form " name="path" placeholder="{{path}}" value="{{path}}">
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="col-5 mt-2 mb-1" style="text-align: left;">
+        <div class="row d-flex justify-content-center">
+            <div class="col-10 mb-1" style="text-align: left;">
                 <div class="card text-white bg-dark mb-3 shadow-sm animate__animated animate__fadeIn">
-                    <div class="card-body" id="folders_2">
+                    <div class="card-body" id="folders">
 
                     </div>
                 </div>
@@ -71,23 +73,29 @@
     function innerData() {
         let data = JSON.parse(`{{ data }}`)
         let state = `{{ state }}`
-        let folders_1 = document.getElementById("folders_1");
-        let folders_2 = document.getElementById("folders_2");
+        let folders = document.getElementById("folders");
 
-        if (state == false || folders_1 == null || folders_2 == null){
+        function reload_page(){
             setTimeout(() => {
                 location.reload()
             }, 5000);
         }
 
-        folders_1.innerHTML = `<div></div>`
-        folders_2.innerHTML = `<div></div>`
+        if (folders === null){
+            folders = `<div></div>`
+            reload_page()
+        }
+
+        if (state == false){
+            reload_page()
+        }
+            
 
         if (data == null){
             data = ["null"]
         }
 
-        for (let i = 0; i < data.length / 2; i++){
+        for (let i = 0; i < data.length; i++){
 
             if (data[i] == undefined
             || data[i].includes('.tmp')
@@ -102,35 +110,11 @@
                 
             }
             else{
-                folders_1.innerHTML += 
+                folders.innerHTML += 
                 `
                 <a href="updateData/?filename=`+ data[i] +`"> <button class="btn btn-light mt-1 mb-1 text-weight-form text-dark">` + data[i] + `</button></a>
                 `
             }
-        }
-
-        for (let i = data.length / 2; i < data.length; i++){
-
-            if (data[i] == undefined
-            || data[i].includes('.tmp')
-            || data[i].includes('.sys')
-            || data[i].includes('.Bin')
-            || data[i].includes('.log')
-            || data[i].includes('.dat')
-            || data[i].includes('$')
-            || data[i].includes('null')
-            ){
-
-
-            }
-            else{
-                folders_2.innerHTML += 
-                `
-                <a href="/disk/{{ disk.id }}/updateData/?filename=`+ data[i] +`"> <button class="btn btn-light mt-1 mb-1 text-weight-form text-dark">` + data[i] + `</button></a>
-                `
-            }
-
-            
         }
     }
 

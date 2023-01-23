@@ -29,5 +29,6 @@ body {
 }
 
 .color-panel{
+  background-color: rgb(145, 47, 47);
   border-radius: 10px;
 }
