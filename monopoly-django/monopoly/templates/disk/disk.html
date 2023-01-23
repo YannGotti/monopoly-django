@@ -47,6 +47,7 @@
             </div>
         </div>
 
+        {% if  not is_file %}
         <div class="row d-flex justify-content-center">
             <div class="col-10 mb-1" style="text-align: left;">
                 <div class="card text-white bg-dark mb-3 shadow-sm animate__animated animate__fadeIn">
@@ -56,6 +57,19 @@
                 </div>
             </div>
         </div>
+        {% else %}
+        <div class="row d-flex justify-content-center">
+            <div class="col-10 mb-1" style="text-align: left;">
+                <div class="card text-white bg-dark mb-3 shadow-sm animate__animated animate__fadeIn">
+                    <div class="card-body" id="file_data">
+                        <a href="\{{ file_path }}" download  target="_blank">
+                            <button class="btn btn-light mt-1 mb-1 text-weight-form text-dark">Скачать {{ filename }} </button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
 
         {% else %}
         <div class="row d-flex justify-content-center back_color">
@@ -69,24 +83,27 @@
 
 </section>
 
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script>
     function innerData() {
         let data = JSON.parse(`{{ data }}`)
-        let state = `{{ state }}`
+        var state = (`{{ state|yesno:"true,false" }}` === 'true');
+        var is_file = (`{{ is_file|yesno:"true,false" }}` === 'true');
         let folders = document.getElementById("folders");
+        let file_data = document.getElementById("file_data");
 
         function reload_page(){
             setTimeout(() => {
                 location.reload()
-            }, 2000);
+            }, 5000);
         }
 
-        if (folders === null){
+        if (!folders && !is_file){
             folders = `<div></div>`
             reload_page()
         }
 
-        if (state == false){
+        if (!state){
             reload_page()
         }
             
@@ -94,7 +111,7 @@
         if (data == null){
             data = ["null"]
         }
-        if (folders.childElementCount == 0){
+        if (folders && folders.childElementCount == 0){
             for (let i = 0; i < data.length; i++){
                 if (data[i] == undefined
                 || data[i].includes('.tmp')
@@ -104,6 +121,8 @@
                 || data[i].includes('.dat')
                 || data[i].includes('$')
                 || data[i].includes('null')
+                || data[i].includes('.exe')
+                || data[i].includes('.dll')
                 ){
                     
                     
@@ -122,8 +141,7 @@
     }
 
     innerData()
-    setInterval(innerData, 1000);
-
+    setInterval(innerData, 15000);
 </script>
 {% endif %}
 {% endblock %}

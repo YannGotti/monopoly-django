@@ -10,4 +10,6 @@ urlpatterns = [
     path('disk/client/getData/', views.ClientDataDisk.as_view()),
     path('disk/client/getRequest/', views.ClientGetRequest.as_view()),
     path('disk/client/postRequestState/', views.ClientGetStateRequest.as_view()),
+    path('disk/client/requestIsFile/', views.ClientGetIsFileRequest.as_view()),
+    path('disk/client/GetFileData/', views.ClientGetFileData.as_view()),
 ]

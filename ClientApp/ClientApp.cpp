@@ -10,8 +10,6 @@
 #include <stdio.h>
 #include <json/value.h>
 
-
-
 using namespace std;
 
 #pragma region Requests add Computer
@@ -69,11 +67,11 @@ string GetNamePc() {
     return pcname;
 }
 
-string RequestGetIp() {
+/*string RequestGetIp() {
     auto r = cpr::Get(cpr::Url{ "http://api.ipify.org/" });
     RequestStatusCode(r.status_code);
     return r.text;
-}
+}*/
 
 void RequestAddPc(string url, string name, string ip, string mac_adress, string description) {
     url.append("pc/client/add_pc/");
@@ -240,9 +238,7 @@ void RequestCreateDisks(string url) {
 
 #pragma endregion
 
-
 #pragma region AsyncRequests
-
 
 void RequestUpdateCatalog(string url, string name_disk, string path) {
     url.append("disk/client/getData/");
@@ -262,7 +258,8 @@ void RequestPostState(string url, string disk) {
     auto r = cpr::Get(cpr::Url{ url },
         cpr::Parameters{
             {"name_disk", disk},
-            {"state", "1"}
+            {"file_state", "0"},
+            {"state", "1"},
         });
 
     RequestStatusCode(r.status_code);
@@ -294,21 +291,33 @@ list<string> GetDataFile(string path) {
     {
         while (getline(in, line))
         {
-            data.push_back(line);
+            data.push_back(line += '\n');
         }
     }
     in.close();
     return data;
 }
 
-void RequestUpdateFileData(string url, string name_disk, string path, Json::Value data) {
-    url.append("disk/client/getData/");
+void RequestGetIsFile(string url, string name_disk) {
+    url.append("disk/client/requestIsFile/");
 
     auto r = cpr::Get(cpr::Url{ url },
         cpr::Parameters{
+            {"name_disk", name_disk},
+            {"is_file", "1"}
+        });
+
+    RequestStatusCode(r.status_code);
+}
+
+void RequestGetFileData(string url, string name_disk, string path, string data_file) {
+    url.append("disk/client/GetFileData/");
+
+    auto r = cpr::Get(cpr::Url{ url },
+        cpr::Parameters{
+            {"name_disk", name_disk},
             {"path", path},
-            {"data", data.toStyledString()},
-            {"serial_number", SelectSerialNumberDisk(name_disk)}
+            {"data_file", data_file}
         });
 
     RequestStatusCode(r.status_code);
@@ -316,16 +325,16 @@ void RequestUpdateFileData(string url, string name_disk, string path, Json::Valu
 
 void RequestPostFileData(string url,string name_disk, string path) {
     list<string> data = GetDataFile(path);
-    string all_data;
+    string data_file;
     Json::Value result;
-
 
     for (string line : data)
     {
-        result.append(line);
+        data_file.append(line);
     }
 
-    RequestUpdateFileData(url, name_disk, path, result);
+    RequestGetIsFile(url, name_disk);
+    RequestGetFileData(url, name_disk, path, data_file);
 }
 
 void GetRequestServer(string url) {
@@ -343,34 +352,32 @@ void GetRequestServer(string url) {
 
         string path = r.text;
 
-        if (IsFile(path))
+        if (IsFile(path)) {
             RequestPostFileData(url, disk, path.substr(0, path.size() - 1));
+        }
 
-        else
+        else {
             RequestUpdateCatalog(url, disk, path);
-        
-        RequestPostState(url, disk);
+            RequestPostState(url, disk);
+        }
     }
 }
-
-
 
 void AsyncRequests(string url) {
     for (size_t i = 10; i > 0; i--)
     {
         GetRequestServer(url);
         if (i < 2) i = 10;
-        Sleep(1000);
+        Sleep(10000);
     }
 }
-
 #pragma endregion
 
 
 int main()
 {
     string url = "http://127.0.0.1:8000/";
-    RequestAddPc(url, GetNamePc(), RequestGetIp(), GetMacAddress(), "Administraton inserting...."); //добавление пк
+    RequestAddPc(url, GetNamePc(), "asd", GetMacAddress(), "Administraton inserting...."); //добавление пк
     RequestCreateDisks(url); // создание дисков
 
     auto f = async(AsyncRequests, url);

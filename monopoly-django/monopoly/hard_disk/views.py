@@ -5,8 +5,11 @@ from django.core import serializers
 from django.views.generic.base import View
 from pc.models import Disk, UserPc
 from .models import DataDisk, RequestPc
+import os
+from pathlib import Path
+import time
 
-
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 class SelectDisk(View):
     def get(self, request, pk):
@@ -16,7 +19,7 @@ class SelectDisk(View):
         except Disk.DoesNotExist:
             return render(request, '404.html')
 
-        data = DataDisk.objects.filter(disk = disk)
+        data = DataDisk.objects.get(disk = disk)
         statePc = RequestPc.objects.filter(disk = disk)
 
         if (not data): return render(request, '404.html')
@@ -24,18 +27,26 @@ class SelectDisk(View):
 
 
         last_path = ""
-        if (data[0].path == disk.name):
+        if (data.path == disk.name):
             last_path = disk.name
         else:
-            last_path = SelectLastPath(data[0].path)
+            last_path = SelectLastPath(data.path)
+
+        filename = ''
+        if (data.path):
+            array_path = data.path.split('\\')
+            filename = array_path[len(array_path)-2]
 
         context = {
-            'state': statePc[0].request,
+            'state': statePc[0].state,
+            'is_file': statePc[0].is_file,
             'disk' : disk,
-            'data' : SafeString(data[0].data),
-            'path' : data[0].path,
+            'data' : SafeString(data.data),
+            'path' : data.path,
             'last_path' : last_path,
-            'pc': disk.user_pc
+            'pc': disk.user_pc,
+            'file_path' : data.file_path,
+            'filename': filename
         }
 
         return render(request, 'disk/disk.html', context = context)
@@ -98,6 +109,7 @@ class ClientGetStateRequest(View):
         data = request.GET
 
         state = bool(int(data.get('state')))
+        file_state = bool(int(data.get('file_state')))
 
         disk = Disk.objects.filter(name = data.get('name_disk'))
 
@@ -106,15 +118,66 @@ class ClientGetStateRequest(View):
         if (RequestPc.objects.filter(disk = disk[0])):
             request_pc = RequestPc.objects.get(disk = disk[0])
 
-            request_pc.request = state
+            request_pc.state = state
+            request_pc.is_file = file_state
             request_pc.save()
 
             return HttpResponse('RequestState already created')
         
-        state = RequestPc(request = state, disk = disk[0])
-        state.save()
+        request_state = RequestPc(state = state, is_file = file_state, disk = disk[0])
+        request_state.save()
         return HttpResponse('Ok')
 
+class ClientGetIsFileRequest(View):
+    def get(self, request):
+        data = request.GET
+        is_file = bool(int(data.get('is_file')))
+
+        disk = Disk.objects.get(name = data.get('name_disk'))
+
+        if (not disk): return HttpResponse('Not pc')
+
+        request_state = RequestPc.objects.get(disk = disk)
+        request_state.is_file = is_file
+        request_state.save()
+        return HttpResponse('Ok')
+
+class ClientGetFileData(View):
+    def get(self, request):
+        data = request.GET
+
+        disk = Disk.objects.get(name = data.get('name_disk'))
+
+        if (not disk): return HttpResponse('Not pc')
+
+        requestpc = RequestPc.objects.get(disk = disk)
+
+        if (not requestpc): return HttpResponse('Not pc')
+
+        computer_path = data.get('path')
+        data_file = data.get('data_file')
+
+        array_path = computer_path.split('\\')
+
+        filename = array_path[len(array_path)-1]
+
+        path_create_file = os.path.join(BASE_DIR, f'media\\files\\{disk.user_pc.name}-{filename}')
+        site_path = f'media\\files\\{disk.user_pc.name}-{filename}'
+
+        if (not os.path.exists(path_create_file)):
+            data_disk = DataDisk.objects.get(disk = disk)
+            if (not data_disk): return HttpResponse('Not pc')
+            data_disk.file_path = site_path
+
+            file = open(path_create_file, "w+")
+            file.write(data_file)
+            file.close()
+            data_disk.save()
+
+        requestpc.state = True
+        requestpc.save()
+
+        return HttpResponse('Ok')
 
 class GetPathFolder(View):
     def get(self, request, pk):
@@ -132,7 +195,7 @@ class GetPathFolder(View):
 
         if (not state): return HttpResponse('Not Data')
 
-        state[0].request = False
+        state[0].state = False
         state[0].save()
 
         filename = data.get('filename')
@@ -179,7 +242,7 @@ class MainFolderSelect(View):
         if (path == "" or path == disk.name[0] or path == f"{disk.name[0]}:" or len(path) < 3):
             data_disk.path = disk.name
             data_disk.save()
-            state.request = False
+            state.state = False
             state.save()
             return redirect(f"/disk/{pk}")
         
@@ -198,7 +261,7 @@ class MainFolderSelect(View):
         if (default_path != disk.name):
             data_disk.path = disk.name
 
-        state.request = False
+        state.state = False
         state.save()
         data_disk.save()
         return redirect(f"/disk/{pk}")
