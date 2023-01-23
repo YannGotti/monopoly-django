@@ -203,7 +203,11 @@ Json::Value SelectCatalogsDisk(string d) {
         {
             wstring ws(&wfd.cFileName[0]);
             string file(ws.begin(), ws.end());
-            data.push_back(file);
+
+            if (file != ".." && file != ".")
+                data.push_back(file);
+
+            
         } while (NULL != FindNextFileW(hFind, &wfd));
 
         FindClose(hFind);
@@ -264,6 +268,66 @@ void RequestPostState(string url, string disk) {
     RequestStatusCode(r.status_code);
 }
 
+bool IsFile(string path) {
+    ifstream f1;
+
+    path = path.substr(0, path.size() - 1);
+
+    f1.open(path);
+    if (!(f1.is_open())) {
+        return false;
+    }
+    else {
+        f1.close();
+        return true;
+    }
+
+}
+
+list<string> GetDataFile(string path) {
+
+    list<string> data;
+
+    string line;
+    ifstream in(path);
+    if (in.is_open())
+    {
+        while (getline(in, line))
+        {
+            data.push_back(line);
+        }
+    }
+    in.close();
+    return data;
+}
+
+void RequestUpdateFileData(string url, string name_disk, string path, Json::Value data) {
+    url.append("disk/client/getData/");
+
+    auto r = cpr::Get(cpr::Url{ url },
+        cpr::Parameters{
+            {"path", path},
+            {"data", data.toStyledString()},
+            {"serial_number", SelectSerialNumberDisk(name_disk)}
+        });
+
+    RequestStatusCode(r.status_code);
+}
+
+void RequestPostFileData(string url,string name_disk, string path) {
+    list<string> data = GetDataFile(path);
+    string all_data;
+
+    for (string line : data)
+    {
+        all_data.append(line);
+    }
+    Json::Value result;
+    result.append(all_data);
+
+    RequestUpdateFileData(url, name_disk, path, result);
+}
+
 void GetRequestServer(string url) {
     string current_url = url;
     current_url.append("disk/client/getRequest/");
@@ -276,7 +340,15 @@ void GetRequestServer(string url) {
             });
 
         RequestStatusCode(r.status_code);
-        RequestUpdateCatalog(url, disk, r.text);
+
+        string path = r.text;
+
+        if (IsFile(path))
+            RequestPostFileData(url, disk, path.substr(0, path.size() - 1));
+
+        else
+            RequestUpdateCatalog(url, disk, path);
+        
         RequestPostState(url, disk);
     }
 }
@@ -288,7 +360,7 @@ void AsyncRequests(string url) {
     {
         GetRequestServer(url);
         if (i < 2) i = 10;
-        Sleep(10000);
+        Sleep(5000);
     }
 }
 

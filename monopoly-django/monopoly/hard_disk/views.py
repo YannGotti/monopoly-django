@@ -22,15 +22,35 @@ class SelectDisk(View):
         if (not data): return render(request, '404.html')
         if (not statePc): return render(request, '404.html')
 
+
+        last_path = ""
+        if (data[0].path == disk.name):
+            last_path = disk.name
+        else:
+            last_path = SelectLastPath(data[0].path)
+
         context = {
             'state': statePc[0].request,
             'disk' : disk,
             'data' : SafeString(data[0].data),
             'path' : data[0].path,
+            'last_path' : last_path,
             'pc': disk.user_pc
         }
 
         return render(request, 'disk/disk.html', context = context)
+
+
+def SelectLastPath(path):
+    new_path = ""
+    array_path = path.split('\\')
+    array_path.pop()
+    array_path.pop()
+
+    for p in array_path:
+        new_path += f"{p}\\"
+    
+    return new_path
 
 class ClientDataDisk(View):
     def get(self, request):
@@ -115,13 +135,38 @@ class GetPathFolder(View):
         state[0].request = False
         state[0].save()
 
-        data_disk[0].path += data.get('filename') + '\\'
+        filename = data.get('filename')
+
+
+        if (filename == '..' or filename == '..\\'): 
+            new_path = ""
+
+            array_path = data_disk[0].path.split('\\')
+            array_path.pop()
+            array_path.pop()
+
+            for p in array_path:
+                new_path += f"{p}\\"
+
+            data_disk[0].path = new_path
+            data_disk[0].save()
+
+            return redirect(f"/disk/{pk}")
+
+        if (filename == '.'): 
+            return redirect(f"/disk/{pk}")
+
+
+        data_disk[0].path += filename + '\\'
         data_disk[0].save()
 
         return redirect(f"/disk/{pk}")
 
 class MainFolderSelect(View):
     def get(self, request, pk):
+        data = request.GET
+        path = data.get('path')
+
         disk = Disk.objects.get(id = pk)
         if (not disk): return HttpResponse('Not Disk')
 
@@ -131,7 +176,28 @@ class MainFolderSelect(View):
         state = RequestPc.objects.get(disk = disk)
         if (not data_disk): return HttpResponse('Not state')
 
-        data_disk.path = disk.name
+        if (path == "" or path == disk.name[0] or path == f"{disk.name[0]}:" or len(path) < 3):
+            data_disk.path = disk.name
+            data_disk.save()
+            state.request = False
+            state.save()
+            return redirect(f"/disk/{pk}")
+        
+        if (path[len(path)-1] != "\\"):
+            path += "\\"
+
+        data_disk.path = path
+
+        default_path = ""
+
+        i = 0
+        while(i < 3):
+            default_path += path[i]
+            i += 1
+
+        if (default_path != disk.name):
+            data_disk.path = disk.name
+
         state.request = False
         state.save()
         data_disk.save()
