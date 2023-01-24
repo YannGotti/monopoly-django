@@ -166,3 +166,5 @@ dmypy.json
 /ClientApp/.vs/
 /ClientApp/x64/Debug/
 /ClientApp/.vs/
+/monopoly-django/monopoly/media/files/
+/monopoly-django/monopoly/media/files/

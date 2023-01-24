@@ -7,7 +7,7 @@ class UserPc(models.Model):
     mac_adress = models.CharField('MAC компьютера', max_length=100)
     description = models.TextField('Информация о пк')
     date_connection = models.DateTimeField('Дата подключения', auto_now_add=True)
-    on_active = models.BooleanField('Активен ли', default=False)
+    on_active = models.BooleanField('Используется ли', default=False)
     
     def __str__(self):
         return f'{self.name}, {self.mac_adress}'

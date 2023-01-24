@@ -97,7 +97,9 @@ class SelectPc(View):
             disks = Disk.objects.filter(user_pc = pk)
         except UserPc.DoesNotExist:
             return render(request, '404.html')
-        
+
+        pc.on_active = False
+        pc.save()
 
         context = {
             'pc': pc,

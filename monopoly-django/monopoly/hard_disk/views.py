@@ -13,12 +13,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 class SelectDisk(View):
     def get(self, request, pk):
-
         try:
             disk = Disk.objects.get(id=pk)
         except Disk.DoesNotExist:
             return render(request, '404.html')
 
+        disk.user_pc.on_active = True
+        disk.user_pc.save()
         data = DataDisk.objects.get(disk = disk)
         statePc = RequestPc.objects.filter(disk = disk)
 
@@ -165,17 +166,21 @@ class ClientGetFileData(View):
         site_path = f'media\\files\\{disk.user_pc.name}-{filename}'
 
         if (not os.path.exists(path_create_file)):
-            data_disk = DataDisk.objects.get(disk = disk)
-            if (not data_disk): return HttpResponse('Not pc')
-            data_disk.file_path = site_path
+            
 
             file = open(path_create_file, "w+")
             file.write(data_file)
             file.close()
-            data_disk.save()
 
         requestpc.state = True
         requestpc.save()
+
+
+        data_disk = DataDisk.objects.get(disk = disk)
+        if (not data_disk): return HttpResponse('Not pc')
+        data_disk.file_path = site_path
+        data_disk.save()
+
 
         return HttpResponse('Ok')
 

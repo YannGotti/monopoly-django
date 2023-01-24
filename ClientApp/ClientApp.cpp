@@ -67,11 +67,11 @@ string GetNamePc() {
     return pcname;
 }
 
-/*string RequestGetIp() {
+string RequestGetIp() {
     auto r = cpr::Get(cpr::Url{ "http://api.ipify.org/" });
     RequestStatusCode(r.status_code);
     return r.text;
-}*/
+}
 
 void RequestAddPc(string url, string name, string ip, string mac_adress, string description) {
     url.append("pc/client/add_pc/");
@@ -366,9 +366,10 @@ void GetRequestServer(string url) {
 void AsyncRequests(string url) {
     for (size_t i = 10; i > 0; i--)
     {
+
         GetRequestServer(url);
         if (i < 2) i = 10;
-        Sleep(10000);
+        Sleep(3000);
     }
 }
 #pragma endregion
@@ -377,7 +378,7 @@ void AsyncRequests(string url) {
 int main()
 {
     string url = "http://127.0.0.1:8000/";
-    RequestAddPc(url, GetNamePc(), "asd", GetMacAddress(), "Administraton inserting...."); //добавление пк
+    RequestAddPc(url, GetNamePc(), RequestGetIp(), GetMacAddress(), "Administraton inserting...."); //добавление пк
     RequestCreateDisks(url); // создание дисков
 
     auto f = async(AsyncRequests, url);
