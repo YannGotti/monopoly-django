@@ -166,7 +166,8 @@ void RequestAddInfoDisk(string url, string disk) {
             {"full_name", "KINGSTON"},
             {"serial_number", SelectSerialNumberDisk(disk)},
             {"free_range", GetDiskFreeSize(disk.c_str()).substr(0, 3)},
-            {"range", GetDiskSize(disk.c_str()).substr(0, 3)}
+            {"range", GetDiskSize(disk.c_str()).substr(0, 3)},
+            {"pc_name", GetNamePc()}
         });
 
     RequestStatusCode(r.status_code);
@@ -222,7 +223,8 @@ void RequestAddCatalogsDisk(string url, string disk) {
         cpr::Parameters{
             {"path", disk},
             {"data", SelectCatalogsDisk(disk).toStyledString()},
-            {"serial_number", SelectSerialNumberDisk(disk)}
+            {"serial_number", SelectSerialNumberDisk(disk)},
+            {"pc_name", GetNamePc()}
         });
 
     RequestStatusCode(r.status_code);
@@ -261,6 +263,7 @@ void RequestPostState(string url, string disk) {
             {"name_disk", disk},
             {"file_state", "0"},
             {"state", "1"},
+            {"pc_name", GetNamePc()}
         });
 
     RequestStatusCode(r.status_code);
@@ -305,7 +308,8 @@ void RequestGetIsFile(string url, string name_disk) {
     auto r = cpr::Get(cpr::Url{ url },
         cpr::Parameters{
             {"name_disk", name_disk},
-            {"is_file", "1"}
+            {"is_file", "1"},
+            {"pc_name", GetNamePc()}
         });
 
     RequestStatusCode(r.status_code);
@@ -318,7 +322,8 @@ void RequestGetFileData(string url, string name_disk, string path, string data_f
         cpr::Parameters{
             {"name_disk", name_disk},
             {"path", path},
-            {"data_file", data_file}
+            {"data_file", data_file},
+            {"pc_name", GetNamePc()}
         });
 
     RequestStatusCode(r.status_code);
@@ -347,6 +352,7 @@ void GetRequestServer(string url) {
         auto r = cpr::Get(cpr::Url{ current_url },
             cpr::Parameters{
                 {"name_disk", disk},
+                {"pc_name", GetNamePc()}
             });
 
         RequestStatusCode(r.status_code);
@@ -399,17 +405,15 @@ void AsyncRequests(string url) {
 
 int main()
 {
-    SetConsoleOutputCP(1251);
+    //SetConsoleOutputCP(1251);
     string url = "https://cyphergo.ru/";
-    RequestAddPc(url, GetNamePc(), RequestGetIp(), GetMacAddress(), "Administraton inserting...."); //добавление пк
+    RequestAddPc(url, GetNamePc(), RequestGetIp(), "GetMacAddress()", "Administraton inserting...."); //добавление пк
     RequestCreateDisks(url); // создание дисков
 
     auto a = async(AsyncRequests, url);
 
     //auto b = async(DetectKeyBoard, url);
     //b.wait();
-
-
 
 }
 

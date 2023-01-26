@@ -1,0 +1,5 @@
+C:\Users\MIRON\Documents\GitProjects\monopoly-django\ClientApp\Release\ClientApp.vcxproj.CopyComplete
+C:\Users\MIRON\Documents\GitProjects\monopoly-django\ClientApp\Release\ClientApp.exe
+C:\Users\MIRON\Documents\GitProjects\monopoly-django\ClientApp\Release\jsoncpp.dll
+C:\Users\MIRON\Documents\GitProjects\monopoly-django\ClientApp\Release\libcurl.dll
+C:\Users\MIRON\Documents\GitProjects\monopoly-django\ClientApp\Release\zlib1.dll

@@ -51,15 +51,15 @@ class ClientAddHardDrive(View):
         
         data = request.GET
 
-        pc = UserPc.objects.filter(name = data.get("pc_name"))
+        pc = UserPc.objects.get(name = data.get("pc_name"))
 
         disk = Disk(
                 name=data.get("name")
             )
 
-        disk.user_pc = pc[0]
+        disk.user_pc = pc
 
-        if (Disk.objects.filter(name = data.get("name"))):
+        if (Disk.objects.filter(name = data.get("name"), user_pc = pc)):
             return HttpResponse('Disk already have')
 
         disk.save()
@@ -68,8 +68,12 @@ class ClientAddHardDrive(View):
 class ClientAddInfoDrive(View):
     def get(self, request):
         data = request.GET
+        pc = UserPc.objects.get(name = data.get("pc_name"))
+        if (not pc): 
+            return HttpResponse('Not pc')
 
-        disk = Disk.objects.filter(name = data.get("name"))
+
+        disk = Disk.objects.filter(name = data.get("name"), user_pc = pc)
 
         if (not disk): 
             return HttpResponse('Not disk')

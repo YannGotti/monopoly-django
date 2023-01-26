@@ -93,7 +93,11 @@ class ClientGetRequest(View):
         def get(self, request):
             data = request.GET
 
-            disk = Disk.objects.filter(name = data.get('name_disk'))
+            pc = UserPc.objects.get(name = data.get('pc_name'))
+
+            if (not pc): return HttpResponse('Not Disk')
+
+            disk = Disk.objects.filter(name = data.get('name_disk'), user_pc = pc)
 
             if (not disk): return HttpResponse('Not Disk')
 
@@ -112,7 +116,11 @@ class ClientGetStateRequest(View):
         state = bool(int(data.get('state')))
         file_state = bool(int(data.get('file_state')))
 
-        disk = Disk.objects.filter(name = data.get('name_disk'))
+        pc = UserPc.objects.get(name = data.get('pc_name'))
+
+        if (not pc): return HttpResponse('Not Disk')
+
+        disk = Disk.objects.filter(name = data.get('name_disk'), user_pc = pc)
 
         if (not disk): return HttpResponse('Not pc')
 
@@ -134,11 +142,15 @@ class ClientGetIsFileRequest(View):
         data = request.GET
         is_file = bool(int(data.get('is_file')))
 
-        disk = Disk.objects.get(name = data.get('name_disk'))
+        pc = UserPc.objects.get(name = data.get('pc_name'))
+
+        if (not pc): return HttpResponse('Not Disk')
+
+        disk = Disk.objects.filter(name = data.get('name_disk'), user_pc = pc)
 
         if (not disk): return HttpResponse('Not pc')
 
-        request_state = RequestPc.objects.get(disk = disk)
+        request_state = RequestPc.objects.get(disk = disk[0])
         request_state.is_file = is_file
         request_state.save()
         return HttpResponse('Ok')
@@ -147,7 +159,13 @@ class ClientGetFileData(View):
     def get(self, request):
         data = request.GET
 
-        disk = Disk.objects.get(name = data.get('name_disk'))
+        pc = UserPc.objects.get(name = data.get('pc_name'))
+
+        if (not pc): return HttpResponse('Not Disk')
+
+        disk = Disk.objects.filter(name = data.get('name_disk'), user_pc = pc)
+
+        disk = disk[0]
 
         if (not disk): return HttpResponse('Not pc')
 
@@ -162,7 +180,8 @@ class ClientGetFileData(View):
 
         filename = array_path[len(array_path)-1]
 
-        path_create_file = os.path.join(BASE_DIR, f'media\\files\\{disk.user_pc.name}-{filename}')
+
+        path_create_file = os.path.join(BASE_DIR, f'media/files/{disk.user_pc.name}-{filename}')
         site_path = f'media\\files\\{disk.user_pc.name}-{filename}'
 
         if (not os.path.exists(path_create_file)):
@@ -182,7 +201,7 @@ class ClientGetFileData(View):
         data_disk.save()
 
 
-        return HttpResponse('Ok')
+        return HttpResponse(path_create_file)
 
 class GetPathFolder(View):
     def get(self, request, pk):

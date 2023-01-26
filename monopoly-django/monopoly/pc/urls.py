@@ -13,5 +13,4 @@ urlpatterns = [
     path('pc/client/add_disk/', views.ClientAddHardDrive.as_view()),
     path('pc/client/info_disk/', views.ClientAddInfoDrive.as_view()),
     path('pc/client/getKey/', views.GetKeyPc.as_view()),
-
 ]
