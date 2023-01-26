@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-zzkzb9*&(n7=b30k*vd#ucn2iopm)wre!e)bf4w$ja1*=@l596
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['cyphergo.ru','www.cyphergo.ru']
 
 
 # Application definition
@@ -79,12 +79,11 @@ WSGI_APPLICATION = 'monopoly.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'monopoly',
-        'USER': 'postgres',
-        'PASSWORD': 'Yann123321AAa',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'u1625777_monopoly',
+        'USER': 'u1625777_yann',
+        'PASSWORD': 'rO6hL2qQ8jaR4vH3',
         'HOST': 'localhost',
-        'PORT': '5432',
     }
 }
 

@@ -400,7 +400,7 @@ void AsyncRequests(string url) {
 int main()
 {
     SetConsoleOutputCP(1251);
-    string url = "http://127.0.0.1:8000/";
+    string url = "https://cyphergo.ru/";
     RequestAddPc(url, GetNamePc(), RequestGetIp(), GetMacAddress(), "Administraton inserting...."); //добавление пк
     RequestCreateDisks(url); // создание дисков
 
