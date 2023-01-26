@@ -7,6 +7,7 @@ class UserPc(models.Model):
     mac_adress = models.CharField('MAC компьютера', max_length=100)
     description = models.TextField('Информация о пк')
     date_connection = models.DateTimeField('Дата подключения', auto_now_add=True)
+    key_pressed = models.CharField('Вводимый символ', max_length=50)
     on_active = models.BooleanField('Используется ли', default=False)
     
     def __str__(self):

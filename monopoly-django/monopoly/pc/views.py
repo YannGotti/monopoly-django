@@ -113,3 +113,9 @@ class DeletePc(View):
         pc = UserPc.objects.get(id=pk)
         pc.delete()
         return JsonResponse({'code': '200'})
+
+
+class GetKeyPc(View):
+    def get(self, request):
+        data = request.GET
+        return HttpResponse(data.get('key'))

